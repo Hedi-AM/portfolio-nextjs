@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: portfolio-nextjs
+  description: Portfolio Next.js of Hedi Ben Abdelmoumen
+  annotations:
+    github.com/project-slug: Hedi-AM/portfolio-nextjs
+  links:
+    - url: http://192.168.122.180:3005
+      title: Application (VM)
+    - url: https://hub.docker.com/r/hediam/portfolio-nextjs
+      title: Docker Hub
+    - url: https://github.com/Hedi-AM/portfolio-nextjs/actions
+      title: CI/CD pipeline
+  tags: [nextjs, docker, portfolio]
+spec:
+  type: website
+  lifecycle: production
+  owner: user:default/guest
