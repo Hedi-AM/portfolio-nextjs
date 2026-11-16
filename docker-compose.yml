@@ -1,15 +1,19 @@
 name: portfolio-nextjs
 services:
   web:
-    image: hediam/portfolio-nextjs:${TAG:-v1}
+    image: hediam/portfolio-nextjs:latest
     container_name: portfolio-nextjs
     ports:
       - "3005:3000"
     restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  watchtower:
+    image: containrrr/watchtower
+    container_name: portfolio-watchtower
+    restart: unless-stopped
     environment:
-      - APP_VERSION=${TAG:-v1}
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+      - DOCKER_API_VERSION=1.44
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --label-enable --interval 30 --cleanup
