@@ -21,52 +21,53 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      version: 
+      version: ${{ steps.v.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
       - name: Apply evolution (v2 features)
-        if: false
+        if: ${{ inputs.evolve == 'yes' }}
         run: |
           cp -r evolution/app/. app/
           git config user.name "backstage-pipeline"
           git config user.email "backstage-pipeline@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet || git commit -m "feat: evolution v2 (Certifications, DevOps & Cloud, Dark Mode, updated info)"
+          git diff --cached --quiet || git commit -m "feat: evolution v2 (Certifications, DevOps and Cloud, Dark Mode, updated info)"
           git push origin main
       - name: Compute version
         id: v
         run: |
-          if [ "" = "workflow_dispatch" ]; then V=""
-          elif [ "" = "1" ]; then V="v1"
-          else V="v1."; fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then V="${{ inputs.version }}"
+          elif [ "${{ github.run_number }}" = "1" ]; then V="v1"
+          else V="v1.${{ github.run_number }}"; fi
           echo "version=$V" >> "$GITHUB_OUTPUT"
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
-          username: 
-          password: 
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          build-args: APP_VERSION=
+          build-args: APP_VERSION=${{ steps.v.outputs.version }}
           tags: |
-            /:
-            /:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE }}:${{ steps.v.outputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE }}:latest
   deploy:
     needs: build
+    if: ${{ vars.DEPLOY_ENABLED == 'true' }}
     runs-on: [self-hosted, portfolio-vm]
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
       - name: Deploy with docker compose
-        run: TAG= docker compose up -d --pull always
+        run: TAG=${{ needs.build.outputs.version }} docker compose up -d --pull always
       - name: Health check
         run: |
-          V=
+          V=${{ needs.build.outputs.version }}
           ok=0
           for i in $(seq 1 30); do
             R=$(curl -fsS http://127.0.0.1:3005/api/health || true)
@@ -75,4 +76,3 @@ jobs:
           done
           if [ "$ok" != 1 ]; then docker compose logs --tail 50; exit 1; fi
           echo "Healthy: $R"
-          echo "### Deployed $V - http://192.168.122.180:3005" >> "$GITHUB_STEP_SUMMARY"
