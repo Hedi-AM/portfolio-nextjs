@@ -15,3 +15,37 @@ Technical documentation: [docs/TECHNICAL.md](docs/TECHNICAL.md)
 The spec expects http://localhost:3000. Docker runs only inside the VM and VM port 3000 is used by another project, so the app is published on **http://192.168.122.180:3005**.
 
 Health endpoint: http://192.168.122.180:3005/api/health
+
+## Backstage templates
+
+Source of both templates is in [backstage-templates/](backstage-templates/): `portfolio-nextjs-template` and `portfolio-redeploy`.
+
+## Screenshots
+
+### 01-backstage-template-form.png
+No tag found, using latest(basename screenshots/01-backstage-template-form.png)](screenshots/01-backstage-template-form.png)
+
+### 02-scaffolder-success.png
+No tag found, using latest(basename screenshots/02-scaffolder-success.png)](screenshots/02-scaffolder-success.png)
+
+### 03-catalog-component.png
+No tag found, using latest(basename screenshots/03-catalog-component.png)](screenshots/03-catalog-component.png)
+
+### 04-dockerhub-tags.png
+No tag found, using latest(basename screenshots/04-dockerhub-tags.png)](screenshots/04-dockerhub-tags.png)
+
+### 05-github-actions-v1.png
+No tag found, using latest(basename screenshots/05-github-actions-v1.png)](screenshots/05-github-actions-v1.png)
+
+### 06-app-v1.png
+No tag found, using latest(basename screenshots/06-app-v1.png)](screenshots/06-app-v1.png)
+
+### 07-backstage-redeploy-form.png
+No tag found, using latest(basename screenshots/07-backstage-redeploy-form.png)](screenshots/07-backstage-redeploy-form.png)
+
+### 08-github-actions-v2.png
+No tag found, using latest(basename screenshots/08-github-actions-v2.png)](screenshots/08-github-actions-v2.png)
+
+### 09-app-v2-dark-mode.png
+No tag found, using latest(basename screenshots/09-app-v2-dark-mode.png)](screenshots/09-app-v2-dark-mode.png)
+

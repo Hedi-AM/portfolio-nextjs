@@ -1,0 +1,47 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: portfolio-redeploy
+  title: Portfolio - evolve and redeploy
+  description: Triggers the CI/CD workflow of a portfolio repo (apply evolution, build, new Docker image version, push, deploy, health check).
+  tags: [nextjs, docker, cicd]
+spec:
+  owner: user:default/guest
+  type: service
+  parameters:
+    - title: Redeploy
+      required: [repoUrl, version, evolve]
+      properties:
+        repoUrl:
+          title: GitHub repository
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts: [github.com]
+        version:
+          title: New image version (example v2 or v1.1)
+          type: string
+          default: v2
+          pattern: '^v[0-9]+(\.[0-9]+)*$'
+        evolve:
+          title: Apply v2 evolution (Certifications, DevOps & Cloud, Dark Mode, new info)
+          type: string
+          enum: ['yes', 'no']
+          default: 'yes'
+  steps:
+    - id: dispatch
+      name: Trigger CI/CD workflow
+      action: github:actions:dispatch
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        workflowId: ci-cd.yml
+        branchOrTagName: main
+        workflowInputs:
+          version: ${{ parameters.version }}
+          evolve: ${{ parameters.evolve }}
+  output:
+    links:
+      - title: Pipeline runs (GitHub Actions)
+        url: https://github.com/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}/actions/workflows/ci-cd.yml
+      - title: Application (VM)
+        url: http://192.168.122.180:3005
